@@ -299,12 +299,13 @@ plt.show()
 
 # Cálculo do Quantil para Tempo de Retorno de 100 anos (ou outro valor desejado)
 tr_100 = 100
-quantil_tr_100_gumbel = gumbel_r.ppf(1 - 1/tr_100, loc=loc_gumbel, scale=scale_gumbel)
+#quantil_tr_100_gumbel = gumbel_r.ppf(1 - 1/tr_100, loc=loc_gumbel, scale=scale_gumbel)
+quantil_tr_100_gumbel = gumbel_r.ppf(1 - 1/tr_100, loc=mu, scale=beta)
 
 # Imprima o quantil para o tempo de retorno desejado
 print(f'Quantil para Tempo de Retorno de {tr_100} anos (Gumbel): {quantil_tr_100_gumbel}')
 
-## TESTE: cálculo do TR a partir do valor de uma cota máxima anual em uma
+## Cálculo do TR a partir do valor de uma cota máxima anual em uma
 # distribuição de Gumbel pode ser realizado usando a função de confiabilidade inversa da distribuição Gumbel
 
 # Suponha que você tenha uma cota máxima anual específica
@@ -321,47 +322,3 @@ F_x = reliability_function(cota_maxima_anual)
 tempo_retorno = 1 / (1 - F_x)
 
 print(f'Tempo de Retorno para a cota máxima anual de {cota_maxima_anual}: {tempo_retorno:.2f} anos')
-
-
-# Plote das curvas de frequência
-plt.figure(figsize=(8, 5))
-plt.plot(df_tr['TREmpirico'], df_tr['Cota'], label='Dados Empíricos', marker='o')
-plt.plot(tempo_retorno_sintetico, dados_sinteticos, label='Gumbel Estimado', linestyle='--')
-
-plt.title('Curvas de Frequência: Dados Empíricos vs. Gumbel Estimado')
-plt.xlabel('Tempo de Retorno')
-plt.ylabel('Cotas Máximas Anuais')
-plt.xscale('log')  # Use escala logarítmica no eixo x para representar tempos de retorno
-plt.legend()
-plt.grid(True)
-plt.show()
-
-
-
-#%% Ajuste da Distribuição Lognormal
-
-params = lognorm.fit(df_cotas_maximas['Cota'])
-shape, loc, scale = params
-
-# Cálculo do Quantil para Tempo de Retorno de 100 anos (ou outro valor desejado)
-tr_100 = 100  # Tempo de Retorno em anos
-quantil_tr_100 = lognorm.ppf(1 - 1/tr_100, shape, loc=loc, scale=scale)
-
-# Visualização do Ajuste da Distribuição
-x = np.linspace(df_cotas_maximas['Cota'].min(), df_cotas_maximas['Cota'].max(), 1000)
-pdf_fitted = lognorm.pdf(x, shape, loc=loc, scale=scale)
-
-plt.hist(df_cotas_maximas['Cota'], bins=30, density=True, alpha=0.6, color='g')
-plt.plot(x, pdf_fitted, 'r-', label='Lognormal Fit')
-plt.title('Ajuste da Distribuição Lognormal')
-plt.legend()
-plt.show() 
-
-# Imprima o quantil para o tempo de retorno desejado
-print(f'Quantil para Tempo de Retorno de {tr_100} anos: {quantil_tr_100}')
-
-
-
-
-
-
